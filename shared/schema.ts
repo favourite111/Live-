@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   role: text("role", { enum: ["student", "teacher", "admin"] }).notNull().default("student"),
   gender: text("gender", { enum: ["male", "female"] }).notNull().default("male"),
   status: text("status", { enum: ["pending", "active", "suspended"] }).notNull().default("pending"),
+  otp: text("otp"),
 });
 
 export const classes = pgTable("classes", {

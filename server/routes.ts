@@ -15,17 +15,10 @@ export async function registerRoutes(
   // Setup auth first
   setupAuth(app);
 
-  // OTP Verification (Mock)
+  // OTP Verification (Real)
   app.post(api.auth.verifyOtp.path, async (req, res) => {
     const { email, otp } = req.body;
     
-    // Original-style mock OTP logic: 
-    // In a real app, we'd send an email here.
-    // For this mock, we accept '123456' as the universal 'original' test code.
-    if (otp !== '123456') {
-      return res.status(400).json({ message: "Invalid OTP code. Please use 123456 for testing." });
-    }
-
     // Find user by email
     const allUsers = await db.select().from(users).where(eq(users.email, email));
     const user = allUsers[0];
@@ -34,13 +27,19 @@ export async function registerRoutes(
       return res.status(404).json({ message: "User not found with this email." });
     }
 
-    // Update user status to active if it was pending (for teachers or students)
-    // Actually, students are active by default, teachers might be pending.
-    if (user.status === 'pending') {
-      await db.update(users).set({ status: 'active' }).where(eq(users.id, user.id));
+    // Verify OTP from database
+    if (user.otp !== otp) {
+      return res.status(400).json({ message: "Invalid OTP code. Please check your email." });
     }
+
+    // Update user status to active if it was pending
+    // Also clear the OTP after successful verification
+    await db.update(users).set({ 
+      status: 'active',
+      otp: null 
+    }).where(eq(users.id, user.id));
     
-    // Log the user in manually if not already
+    // Log the user in manually
     req.login(user, (err) => {
       if (err) return res.status(500).json({ message: "Login failed after verification" });
       res.json(user);

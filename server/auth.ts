@@ -7,6 +7,8 @@ import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 
+import { sendOTPEmail } from "./mailer";
+
 const scryptAsync = promisify(scrypt);
 
 async function hashPassword(password: string) {
@@ -71,11 +73,17 @@ export function setupAuth(app: Express) {
       }
 
       const hashedPassword = await hashPassword(req.body.password);
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      
       const user = await storage.createUser({
         ...req.body,
         password: hashedPassword,
-        status: req.body.role === 'teacher' ? 'pending' : 'active'
+        status: req.body.role === 'teacher' ? 'pending' : 'active',
+        otp: otp
       });
+
+      // Send the real OTP email
+      await sendOTPEmail(user.email, otp);
 
       // Don't auto-login here because we want them to go through OTP
       res.status(201).json(user);
