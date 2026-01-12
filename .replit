@@ -37,3 +37,9 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[userenv]
+
+[userenv.shared]
+EMAIL_USER = "liveiuo2@gmail.com"
+EMAIL_PASS = "ectzxxiaihezfviv"
