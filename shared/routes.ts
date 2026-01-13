@@ -48,6 +48,11 @@ export const api = {
         path: '/api/admin/users/:id/status',
         input: z.object({ status: z.enum(["pending", "active", "suspended"]) }),
         responses: { 200: z.custom<typeof users.$inferSelect>(), 403: z.void() },
+      },
+      deleteUser: {
+        method: 'DELETE' as const,
+        path: '/api/admin/users/:id',
+        responses: { 200: z.void(), 403: z.void(), 404: errorSchemas.notFound },
       }
     }
   },

@@ -115,6 +115,19 @@ export async function registerRoutes(
     res.json(updatedUser);
   });
 
+  app.delete(api.auth.admin.deleteUser.path, async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== 'admin') {
+      return res.sendStatus(403);
+    }
+    const id = Number(req.params.id);
+    const userToDelete = await storage.getUser(id);
+    if (!userToDelete) return res.status(404).send("User not found");
+    if (userToDelete.role === 'admin') return res.status(403).send("Cannot delete admin");
+
+    await storage.deleteUser(id);
+    res.sendStatus(200);
+  });
+
   // Seed data if empty
   const existingClasses = await storage.getClasses();
   if (existingClasses.length === 0) {

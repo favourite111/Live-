@@ -15,6 +15,7 @@ export interface IStorage {
   // Admin methods
   getAllUsers(): Promise<User[]>;
   updateUserStatus(id: number, status: string): Promise<User>;
+  deleteUser(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -40,6 +41,12 @@ export class DatabaseStorage implements IStorage {
   async updateUserStatus(id: number, status: any): Promise<User> {
     const [user] = await db.update(users).set({ status }).where(eq(users.id, id)).returning();
     return user;
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    // Also delete any classes taught by this teacher
+    await db.delete(classes).where(eq(classes.teacherId, id));
+    await db.delete(users).where(eq(users.id, id));
   }
 
   async getClasses(): Promise<(Class & { teacher: User })[]> {
