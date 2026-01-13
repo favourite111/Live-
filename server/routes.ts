@@ -200,6 +200,11 @@ export async function registerRoutes(
     res.sendStatus(200);
   });
 
+  app.get("/api/teachers", async (req, res) => {
+    const teachersList = await db.select().from(users).where(eq(users.role, "teacher"));
+    res.json(teachersList);
+  });
+
   // Seed data if empty
   const existingClasses = await storage.getClasses();
   if (existingClasses.length === 0) {

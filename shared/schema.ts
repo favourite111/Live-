@@ -13,6 +13,9 @@ export const users = pgTable("users", {
   gender: text("gender", { enum: ["male", "female"] }).notNull().default("male"),
   status: text("status", { enum: ["pending", "active", "suspended"] }).notNull().default("pending"),
   otp: text("otp"),
+  bio: text("bio"),
+  specialty: text("specialty"),
+  avatar: text("avatar"),
 });
 
 export const classes = pgTable("classes", {
