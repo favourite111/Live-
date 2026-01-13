@@ -10,14 +10,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import { ArrowLeft, Loader2, User as UserIcon } from "lucide-react";
+import { ArrowLeft, Loader2, User as UserIcon, Upload, X } from "lucide-react";
 import { z } from "zod";
+import { useState } from "react";
 
 const profileSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
   bio: z.string().max(500, "Bio must be under 500 characters").optional(),
   specialty: z.string().min(2, "Specialty is required").optional(),
-  avatar: z.string().url("Must be a valid URL").optional().or(z.string().length(0)),
+  avatar: z.string().optional().or(z.string().length(0)),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -26,6 +27,7 @@ export default function ProfileSettings() {
   const { data: user, isLoading: userLoading } = useUser();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatar || null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -44,6 +46,28 @@ export default function ProfileSettings() {
       </div>
     );
   }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 1024 * 1024) { // 1MB limit for base64
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 1MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setAvatarPreview(base64String);
+        form.setValue("avatar", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   async function onSubmit(values: ProfileFormValues) {
     try {
@@ -136,9 +160,42 @@ export default function ProfileSettings() {
                   name="avatar"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Avatar URL (Optional)</FormLabel>
+                      <FormLabel>Profile Photo</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://example.com/photo.jpg" {...field} />
+                        <div className="flex flex-col gap-4">
+                          {avatarPreview ? (
+                            <div className="relative w-32 h-32 group">
+                              <img 
+                                src={avatarPreview} 
+                                alt="Profile Preview" 
+                                className="w-full h-full object-cover rounded-lg border-2 border-border"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setAvatarPreview(null);
+                                  form.setValue("avatar", "");
+                                }}
+                                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center w-32 h-32 rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer relative bg-muted/50 group">
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                              />
+                              <div className="flex flex-col items-center gap-2 text-muted-foreground group-hover:text-primary transition-colors text-center p-2">
+                                <Upload className="w-6 h-6" />
+                                <span className="text-[10px] font-medium">Upload Image (Max 1MB)</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
