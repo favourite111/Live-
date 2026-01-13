@@ -12,6 +12,7 @@ import Dashboard from "@/pages/dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
 import ForgotPassword from "@/pages/forgot-password";
 import NursingResources from "@/pages/nursing-resources";
+import BrowseCourses from "@/pages/browse-courses";
 
 function Router() {
   return (
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/nursing-resources" component={NursingResources} />
+      <Route path="/browse-courses" component={BrowseCourses} />
       <Route component={NotFound} />
     </Switch>
   );
