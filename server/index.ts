@@ -2,6 +2,11 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import cron from "node-cron";
+import { db } from "./db";
+import { classes, users } from "@shared/schema";
+import { eq, and, gt, lt } from "drizzle-orm";
+import { sendClassReminderEmail } from "./mailer";
 
 const app = express();
 const httpServer = createServer(app);
@@ -95,4 +100,39 @@ app.use((req, res, next) => {
       log(`serving on port ${port}`);
     },
   );
+
+  // Class reminders cron job - runs every 5 minutes
+  cron.schedule("*/5 * * * *", async () => {
+    log("Running class reminders check...", "cron");
+    const now = new Date();
+    const reminderWindowStart = new Date(now.getTime() + 25 * 60000); // 25 mins from now
+    const reminderWindowEnd = new Date(now.getTime() + 35 * 60000);   // 35 mins from now
+
+    try {
+      const upcomingClasses = await db.query.classes.findMany({
+        where: and(
+          gt(classes.startTime, reminderWindowStart),
+          lt(classes.startTime, reminderWindowEnd)
+        ),
+        with: {
+          teacher: true
+        }
+      });
+
+      for (const cls of upcomingClasses) {
+        log(`Sending reminder for class: ${cls.title}`, "cron");
+        // Send reminder to teacher
+        await sendClassReminderEmail(cls.teacher.email, cls.teacher.fullName, {
+          title: cls.title,
+          startTime: cls.startTime.toLocaleString(),
+          meetingLink: cls.meetingLink
+        });
+        
+        // In a real app, you would also fetch all enrolled students and send them reminders
+        // For now, we only have teachers and public classes
+      }
+    } catch (err) {
+      log(`Error in reminders cron: ${err}`, "cron");
+    }
+  });
 })();

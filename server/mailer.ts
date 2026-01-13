@@ -130,3 +130,34 @@ export async function sendClassConfirmationEmail(to: string, fullName: string, c
     console.error("Error sending class confirmation email:", error);
   }
 }
+
+export async function sendClassReminderEmail(to: string, fullName: string, classDetails: {
+  title: string;
+  startTime: string;
+  meetingLink: string;
+}) {
+  try {
+    await mailer.sendMail({
+      from: `"LiveClass" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: `Reminder: ${classDetails.title} starts soon!`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h2 style="color: #2563eb; text-align: center;">Class Reminder</h2>
+          <p style="font-size: 16px; line-height: 1.5; color: #475569;">Hello ${fullName},</p>
+          <p style="font-size: 16px; line-height: 1.5; color: #475569;">Your class "<strong>${classDetails.title}</strong>" starts in about 30 minutes at ${classDetails.startTime}.</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${classDetails.meetingLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Join Class Now</a>
+          </div>
+          
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+          <p style="font-size: 12px; color: #94a3b8; text-align: center;">LiveClass Educational Platform</p>
+        </div>
+      `,
+    });
+    console.log(`Reminder email sent to ${to}`);
+  } catch (error) {
+    console.error("Error sending reminder email:", error);
+  }
+}
