@@ -7,6 +7,7 @@ import { users } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { sendStatusUpdateEmail } from "./mailer";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -112,6 +113,12 @@ export async function registerRoutes(
     const id = Number(req.params.id);
     const { status } = req.body;
     const updatedUser = await storage.updateUserStatus(id, status);
+    
+    // Send email notification for status changes (active/suspended)
+    if (status === 'active' || status === 'suspended') {
+      await sendStatusUpdateEmail(updatedUser.email, updatedUser.fullName, status);
+    }
+    
     res.json(updatedUser);
   });
 

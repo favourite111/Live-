@@ -31,6 +31,37 @@ export async function sendOTPEmail(to: string, otp: string) {
     console.log(`OTP sent successfully to ${to}`);
   } catch (error) {
     console.error("Error sending OTP email:", error);
-    // In production, you might want to throw the error to handle it in the route
+  }
+}
+
+export async function sendStatusUpdateEmail(to: string, fullName: string, status: "active" | "suspended") {
+  const isApproval = status === "active";
+  const title = isApproval ? "Account Approved" : "Account Suspended";
+  const color = isApproval ? "#22c55e" : "#ef4444";
+  const message = isApproval 
+    ? "Congratulations! Your account has been reviewed and approved. You can now log in and start using all the features of LiveClass."
+    : "We regret to inform you that your account has been suspended. If you believe this is a mistake, please contact our support team.";
+
+  try {
+    await mailer.sendMail({
+      from: `"LiveClass" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: `LiveClass: ${title}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h2 style="color: ${color}; text-align: center;">${title}</h2>
+          <p style="font-size: 16px; line-height: 1.5; color: #475569;">Hello ${fullName},</p>
+          <p style="font-size: 16px; line-height: 1.5; color: #475569;">${message}</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://${process.env.REPLIT_DEV_DOMAIN}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to LiveClass</a>
+          </div>
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+          <p style="font-size: 12px; color: #94a3b8; text-align: center;">LiveClass Educational Platform</p>
+        </div>
+      `,
+    });
+    console.log(`Status update email sent to ${to}`);
+  } catch (error) {
+    console.error("Error sending status update email:", error);
   }
 }
