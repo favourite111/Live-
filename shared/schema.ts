@@ -23,6 +23,7 @@ export const classes = pgTable("classes", {
   durationMinutes: integer("duration_minutes").notNull(),
   meetingLink: text("meeting_link").notNull(),
   teacherId: integer("teacher_id").notNull(),
+  reminderSent: boolean("reminder_sent").notNull().default(false),
 });
 
 export const classesRelations = relations(classes, ({ one }) => ({

@@ -112,7 +112,8 @@ app.use((req, res, next) => {
       const upcomingClasses = await db.query.classes.findMany({
         where: and(
           gt(classes.startTime, reminderWindowStart),
-          lt(classes.startTime, reminderWindowEnd)
+          lt(classes.startTime, reminderWindowEnd),
+          eq(classes.reminderSent, false)
         ),
         with: {
           teacher: true
@@ -128,8 +129,8 @@ app.use((req, res, next) => {
           meetingLink: cls.meetingLink
         });
         
-        // In a real app, you would also fetch all enrolled students and send them reminders
-        // For now, we only have teachers and public classes
+        // Mark as sent
+        await db.update(classes).set({ reminderSent: true }).where(eq(classes.id, cls.id));
       }
     } catch (err) {
       log(`Error in reminders cron: ${err}`, "cron");
