@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Mail, MessageSquare, Award, BookOpen, Star, Linkedin, Twitter } from "lucide-react";
+import { ArrowLeft, Mail, MessageSquare, Award, BookOpen, Star, Linkedin, Twitter, Users } from "lucide-react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 
