@@ -98,11 +98,10 @@ export default function Dashboard() {
               {isTeacher ? (
                 <CreateClassDialog />
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 px-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6">
                   {[
                     { label: "Browse Courses", icon: PlayCircle, color: "bg-blue-500" },
                     { label: "Nursing Resources", icon: BookOpen, color: "bg-emerald-500" },
-                    { label: "Upcoming Classes", icon: Calendar, color: "bg-purple-500" },
                     { label: "Meet Teachers", icon: Users, color: "bg-orange-500" },
                     { label: "Community", icon: MessageSquare, color: "bg-pink-500" },
                   ].map((item) => (
