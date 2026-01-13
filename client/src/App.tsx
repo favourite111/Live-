@@ -11,6 +11,7 @@ import VerifyOtp from "@/pages/verify-otp";
 import Dashboard from "@/pages/dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
 import ForgotPassword from "@/pages/forgot-password";
+import NursingResources from "@/pages/nursing-resources";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/verify-otp" component={VerifyOtp} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/nursing-resources" component={NursingResources} />
       <Route component={NotFound} />
     </Switch>
   );

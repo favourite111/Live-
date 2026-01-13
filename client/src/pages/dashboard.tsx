@@ -101,7 +101,7 @@ export default function Dashboard() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6">
                   {[
                     { label: "Browse Courses", icon: PlayCircle, color: "bg-blue-500" },
-                    { label: "Nursing Resources", icon: BookOpen, color: "bg-emerald-500" },
+                    { label: "Nursing Resources", icon: BookOpen, color: "bg-emerald-500", onClick: () => setLocation("/nursing-resources") },
                     { label: "Meet Teachers", icon: Users, color: "bg-orange-500" },
                     { label: "Community", icon: MessageSquare, color: "bg-pink-500" },
                   ].map((item) => (
@@ -109,6 +109,7 @@ export default function Dashboard() {
                       key={item.label}
                       variant="outline"
                       className="h-auto py-4 flex flex-col gap-2 border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all group"
+                      onClick={item.onClick}
                     >
                       <div className={`w-10 h-10 rounded-full ${item.color} flex items-center justify-center text-white mb-1 group-hover:scale-110 transition-transform`}>
                         <item.icon className="w-5 h-5" />
