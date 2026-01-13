@@ -7,7 +7,7 @@ import { users } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { sendStatusUpdateEmail, sendResetOTPEmail } from "./mailer";
+import { sendStatusUpdateEmail, sendResetOTPEmail, sendClassConfirmationEmail } from "./mailer";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -106,6 +106,16 @@ export async function registerRoutes(
       };
       
       const cls = await storage.createClass(classData);
+      
+      // Send confirmation email to the teacher
+      await sendClassConfirmationEmail(user.email, user.fullName, {
+        title: cls.title,
+        description: cls.description,
+        startTime: cls.startTime.toLocaleString(),
+        durationMinutes: cls.durationMinutes,
+        meetingLink: cls.meetingLink
+      });
+
       res.status(201).json(cls);
     } catch (err) {
       if (err instanceof z.ZodError) {
