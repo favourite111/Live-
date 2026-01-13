@@ -13,6 +13,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import ForgotPassword from "@/pages/forgot-password";
 import NursingResources from "@/pages/nursing-resources";
 import BrowseCourses from "@/pages/browse-courses";
+import MeetTeachers from "@/pages/meet-teachers";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/nursing-resources" component={NursingResources} />
       <Route path="/browse-courses" component={BrowseCourses} />
+      <Route path="/meet-teachers" component={MeetTeachers} />
       <Route component={NotFound} />
     </Switch>
   );
