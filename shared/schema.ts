@@ -26,12 +26,39 @@ export const classes = pgTable("classes", {
   reminderSent: boolean("reminder_sent").notNull().default(false),
 });
 
-export const classesRelations = relations(classes, ({ one }) => ({
+export const enrollments = pgTable("enrollments", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  classId: integer("class_id").notNull(),
+});
+
+export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
+  user: one(users, {
+    fields: [enrollments.userId],
+    references: [users.id],
+  }),
+  class: one(classes, {
+    fields: [enrollments.classId],
+    references: [classes.id],
+  }),
+}));
+
+export const classesRelations = relations(classes, ({ one, many }) => ({
   teacher: one(users, {
     fields: [classes.teacherId],
     references: [users.id],
   }),
+  enrollments: many(enrollments),
 }));
+
+export const usersRelations = relations(users, ({ many }) => ({
+  classes: many(classes),
+  enrollments: many(enrollments),
+}));
+
+export const insertEnrollmentSchema = createInsertSchema(enrollments);
+export type Enrollment = typeof enrollments.$inferSelect;
+export type InsertEnrollment = z.infer<typeof insertEnrollmentSchema>;
 
 export const insertUserSchema = createInsertSchema(users).omit({ id: true });
 export const insertClassSchema = createInsertSchema(classes).omit({ id: true });

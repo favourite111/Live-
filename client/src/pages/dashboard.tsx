@@ -146,18 +146,35 @@ export default function Dashboard() {
                     </div>
 
                     <div className="mt-6">
-                      <a 
-                        href={cls.meetingLink} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="w-full block"
-                      >
-                        <Button className="w-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-none hover:shadow-md font-medium border border-primary/20 hover:border-transparent">
-                          <Video className="w-4 h-4 mr-2" />
-                          Join Class
-                          <ExternalLink className="w-3 h-3 ml-2 opacity-50" />
-                        </Button>
-                      </a>
+                      {(() => {
+                        const startTime = new Date(cls.startTime).getTime();
+                        const now = new Date().getTime();
+                        const diffMinutes = (startTime - now) / (1000 * 60);
+                        const isVisible = diffMinutes <= 30 && diffMinutes >= -cls.durationMinutes;
+
+                        if (isVisible || isTeacher) {
+                          return (
+                            <a 
+                              href={cls.meetingLink} 
+                              target="_blank" 
+                              rel="noreferrer"
+                              className="w-full block"
+                            >
+                              <Button className="w-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-none hover:shadow-md font-medium border border-primary/20 hover:border-transparent">
+                                <Video className="w-4 h-4 mr-2" />
+                                {isVisible ? "Join Class" : "View Link"}
+                                <ExternalLink className="w-3 h-3 ml-2 opacity-50" />
+                              </Button>
+                            </a>
+                          );
+                        }
+
+                        return (
+                          <div className="bg-muted/50 rounded-md p-3 text-center text-sm text-muted-foreground border border-border/40">
+                            Meeting link visible 30m before start
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </Card>

@@ -161,3 +161,35 @@ export async function sendClassReminderEmail(to: string, fullName: string, class
     console.error("Error sending reminder email:", error);
   }
 }
+
+export async function sendNewClassNotificationEmail(
+  to: string,
+  name: string,
+  classInfo: { title: string; startTime: string; teacherName: string }
+) {
+  try {
+    await mailer.sendMail({
+      from: `"LiveClass" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: `New Class Scheduled: ${classInfo.title}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h2 style="color: #2563eb; text-align: center;">New Class Alert!</h2>
+          <p style="font-size: 16px; line-height: 1.5; color: #475569;">Hi ${name},</p>
+          <p style="font-size: 16px; line-height: 1.5; color: #475569;">A new class has been scheduled that you are automatically enrolled in:</p>
+          <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0 0 10px 0;"><strong>Class:</strong> ${classInfo.title}</p>
+            <p style="margin: 0 0 10px 0;"><strong>Teacher:</strong> ${classInfo.teacherName}</p>
+            <p style="margin: 0;"><strong>Time:</strong> ${classInfo.startTime}</p>
+          </div>
+          <p style="font-size: 14px; color: #64748b; text-align: center;">You can find the meeting link in your dashboard 30 minutes before the class starts.</p>
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+          <p style="font-size: 12px; color: #94a3b8; text-align: center;">LiveClass Educational Platform</p>
+        </div>
+      `,
+    });
+    console.log(`New class notification sent to ${to}`);
+  } catch (error) {
+    console.error("Error sending new class notification email:", error);
+  }
+}

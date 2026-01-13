@@ -3,11 +3,11 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { api } from "@shared/routes";
-import { users } from "@shared/schema";
+import { users, classes, enrollments } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { sendStatusUpdateEmail, sendResetOTPEmail, sendClassConfirmationEmail } from "./mailer";
+import { sendStatusUpdateEmail, sendResetOTPEmail, sendClassConfirmationEmail, sendNewClassNotificationEmail } from "./mailer";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -106,6 +106,15 @@ export async function registerRoutes(
       };
       
       const cls = await storage.createClass(classData);
+
+      // Auto-enroll all existing students in the new class
+      const allStudents = await db.select().from(users).where(eq(users.role, "student"));
+      for (const student of allStudents) {
+        await db.insert(enrollments).values({
+          userId: student.id,
+          classId: cls.id
+        });
+      }
       
       // Send confirmation email to the teacher
       await sendClassConfirmationEmail(user.email, user.fullName, {
@@ -115,6 +124,16 @@ export async function registerRoutes(
         durationMinutes: cls.durationMinutes,
         meetingLink: cls.meetingLink
       });
+
+      // Send notifications to all students
+      for (const student of allStudents) {
+        // We'll use a new mailer function for this
+        await sendNewClassNotificationEmail(student.email, student.fullName, {
+          title: cls.title,
+          startTime: cls.startTime.toLocaleString(),
+          teacherName: user.fullName
+        });
+      }
 
       res.status(201).json(cls);
     } catch (err) {

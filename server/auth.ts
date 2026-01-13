@@ -5,9 +5,11 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
+import { User as SelectUser, enrollments, classes } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
-import { sendOTPEmail } from "./mailer";
+import { sendOTPEmail, sendRegistrationReceiptEmail } from "./mailer";
 
 const scryptAsync = promisify(scrypt);
 
@@ -88,6 +90,17 @@ export function setupAuth(app: Express) {
 
       // Send the real OTP email
       await sendOTPEmail(user.email, otp);
+
+      // Auto-enroll student in all existing classes
+      if (user.role === 'student') {
+        const allOpenClasses = await db.select().from(classes);
+        for (const cls of allOpenClasses) {
+          await db.insert(enrollments).values({
+            userId: user.id,
+            classId: cls.id
+          });
+        }
+      }
 
       // Don't auto-login here because we want them to go through OTP
       res.status(201).json(user);
