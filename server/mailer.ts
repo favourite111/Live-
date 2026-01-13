@@ -65,3 +65,28 @@ export async function sendStatusUpdateEmail(to: string, fullName: string, status
     console.error("Error sending status update email:", error);
   }
 }
+
+export async function sendResetOTPEmail(to: string, otp: string) {
+  try {
+    await mailer.sendMail({
+      from: `"LiveClass" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: "Reset your LiveClass password",
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h2 style="color: #2563eb; text-align: center;">Password Reset</h2>
+          <p style="font-size: 16px; line-height: 1.5; color: #475569;">You requested to reset your password. Use the following code to complete the process:</p>
+          <div style="background-color: #f8fafc; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+            <h1 style="font-size: 32px; color: #1e293b; margin: 0; letter-spacing: 4px;">${otp}</h1>
+          </div>
+          <p style="font-size: 14px; color: #64748b; text-align: center;">This code will expire in 10 minutes.</p>
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+          <p style="font-size: 12px; color: #94a3b8; text-align: center;">If you didn't request this, you can safely ignore this email.</p>
+        </div>
+      `,
+    });
+    console.log(`Reset OTP sent to ${to}`);
+  } catch (error) {
+    console.error("Error sending reset OTP email:", error);
+  }
+}

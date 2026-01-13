@@ -10,12 +10,14 @@ import AuthPage from "@/pages/auth";
 import VerifyOtp from "@/pages/verify-otp";
 import Dashboard from "@/pages/dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
+import ForgotPassword from "@/pages/forgot-password";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/verify-otp" component={VerifyOtp} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={AdminDashboard} />

@@ -11,7 +11,7 @@ import { sendOTPEmail } from "./mailer";
 
 const scryptAsync = promisify(scrypt);
 
-async function hashPassword(password: string) {
+async function hashPasswordInternal(password: string) {
   const salt = randomBytes(16).toString("hex");
   const buf = (await scryptAsync(password, salt, 64)) as Buffer;
   return `${buf.toString("hex")}.${salt}`;
@@ -22,6 +22,10 @@ async function comparePasswords(supplied: string, stored: string) {
   const hashedBuf = Buffer.from(hashed, "hex");
   const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
   return timingSafeEqual(hashedBuf, suppliedBuf);
+}
+
+export async function hashPassword(password: string) {
+  return hashPasswordInternal(password);
 }
 
 export function setupAuth(app: Express) {
@@ -72,7 +76,7 @@ export function setupAuth(app: Express) {
         return res.status(400).send("Username already exists");
       }
 
-      const hashedPassword = await hashPassword(req.body.password);
+      const hashedPassword = await hashPasswordInternal(req.body.password);
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       
       const user = await storage.createUser({

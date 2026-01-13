@@ -135,6 +135,16 @@ export default function AuthPage() {
                     )}
                     Sign In
                   </Button>
+                  <div className="text-center mt-2">
+                    <Button
+                      variant="link"
+                      type="button"
+                      className="text-sm text-primary p-0 h-auto"
+                      onClick={() => setLocation("/forgot-password")}
+                    >
+                      Forgot your password?
+                    </Button>
+                  </div>
                 </form>
               </TabsContent>
 

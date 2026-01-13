@@ -7,7 +7,7 @@ import { users } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { sendStatusUpdateEmail } from "./mailer";
+import { sendStatusUpdateEmail, sendResetOTPEmail } from "./mailer";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -45,6 +45,42 @@ export async function registerRoutes(
       if (err) return res.status(500).json({ message: "Login failed after verification" });
       res.json(user);
     });
+  });
+
+  app.post(api.auth.forgotPassword.path, async (req, res) => {
+    const { email } = req.body;
+    const allUsers = await db.select().from(users).where(eq(users.email, email));
+    const user = allUsers[0];
+    
+    if (!user) {
+      return res.status(404).json({ message: "No account found with this email." });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    await db.update(users).set({ otp }).where(eq(users.id, user.id));
+    await sendResetOTPEmail(email, otp);
+    
+    res.json({ message: "Reset code sent to your email." });
+  });
+
+  app.post(api.auth.resetPassword.path, async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+    const allUsers = await db.select().from(users).where(eq(users.email, email));
+    const user = allUsers[0];
+
+    if (!user || user.otp !== otp) {
+      return res.status(400).json({ message: "Invalid or expired reset code." });
+    }
+
+    const { hashPassword } = await import("./auth");
+    const hashedPassword = await hashPassword(newPassword);
+    
+    await db.update(users).set({ 
+      password: hashedPassword,
+      otp: null 
+    }).where(eq(users.id, user.id));
+
+    res.json({ message: "Password reset successfully. You can now log in." });
   });
 
   app.get(api.classes.list.path, async (req, res) => {

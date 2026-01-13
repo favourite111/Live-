@@ -37,6 +37,18 @@ export const api = {
       input: z.object({ email: z.string(), otp: z.string() }),
       responses: { 200: z.custom<typeof users.$inferSelect>(), 400: z.object({ message: z.string() }) },
     },
+    forgotPassword: {
+      method: 'POST' as const,
+      path: '/api/auth/forgot-password',
+      input: z.object({ email: z.string() }),
+      responses: { 200: z.object({ message: z.string() }), 404: z.object({ message: z.string() }) },
+    },
+    resetPassword: {
+      method: 'POST' as const,
+      path: '/api/auth/reset-password',
+      input: z.object({ email: z.string(), otp: z.string(), newPassword: z.string() }),
+      responses: { 200: z.object({ message: z.string() }), 400: z.object({ message: z.string() }) },
+    },
     admin: {
       users: {
         method: 'GET' as const,
