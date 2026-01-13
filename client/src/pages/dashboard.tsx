@@ -107,7 +107,7 @@ export default function Dashboard() {
                     { label: "Browse Courses", icon: PlayCircle, color: "bg-blue-500", onClick: () => setLocation("/browse-courses") },
                     { label: "Nursing Resources", icon: BookOpen, color: "bg-emerald-500", onClick: () => setLocation("/nursing-resources") },
                     { label: "Meet Teachers", icon: Users, color: "bg-orange-500", onClick: () => setLocation("/meet-teachers") },
-                    { label: "Community", icon: MessageSquare, color: "bg-pink-500" },
+                    { label: "Community", icon: MessageSquare, color: "bg-pink-500", onClick: () => window.open("https://chat.whatsapp.com/your-group-id", "_blank") },
                   ].map((item) => (
                     <Button
                       key={item.label}
