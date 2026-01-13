@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 import { useLocation } from "wouter";
-import { Loader2, LogOut, Video, Calendar, Clock, Trash2, ExternalLink } from "lucide-react";
+import { Loader2, LogOut, Video, Calendar, Clock, Trash2, ExternalLink, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Dashboard() {
@@ -44,6 +44,12 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center gap-4">
+            {user?.role === "admin" && (
+              <Button variant="outline" size="sm" onClick={() => setLocation("/admin")} className="gap-2">
+                <ShieldCheck className="w-4 h-4" />
+                Admin Console
+              </Button>
+            )}
             <div className="hidden md:flex flex-col items-end mr-2">
               <span className="text-sm font-semibold text-foreground">{user?.username}</span>
               <span className="text-xs text-muted-foreground capitalize bg-secondary px-2 py-0.5 rounded-full border border-border">
