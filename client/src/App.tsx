@@ -14,6 +14,7 @@ import ForgotPassword from "@/pages/forgot-password";
 import NursingResources from "@/pages/nursing-resources";
 import BrowseCourses from "@/pages/browse-courses";
 import MeetTeachers from "@/pages/meet-teachers";
+import ProfileSettings from "@/pages/profile-settings";
 
 function Router() {
   return (
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/verify-otp" component={VerifyOtp} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/profile-settings" component={ProfileSettings} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/nursing-resources" component={NursingResources} />
       <Route path="/browse-courses" component={BrowseCourses} />

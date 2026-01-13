@@ -9,6 +9,7 @@ import { Loader2, LogOut, Video, Calendar, Clock, Trash2, ExternalLink, ShieldCh
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { User as UserIcon } from "lucide-react";
 
 export default function Dashboard() {
   const { data: user, isLoading: userLoading } = useUser();
@@ -58,6 +59,9 @@ export default function Dashboard() {
                 {user?.role}
               </span>
             </div>
+            <Button variant="ghost" size="icon" onClick={() => setLocation("/profile-settings")} title="Profile Settings">
+              <UserIcon className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+            </Button>
             <Button variant="ghost" size="icon" onClick={() => logout.mutate()} title="Logout">
               <LogOut className="w-5 h-5 text-muted-foreground hover:text-destructive transition-colors" />
             </Button>

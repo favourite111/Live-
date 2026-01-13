@@ -205,6 +205,29 @@ export async function registerRoutes(
     res.json(teachersList);
   });
 
+  app.patch("/api/users/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const id = Number(req.params.id);
+    const user = req.user as any;
+    
+    // Users can only update their own profile, unless admin
+    if (user.id !== id && user.role !== 'admin') {
+      return res.status(403).send("Not authorized");
+    }
+
+    try {
+      const updateData = req.body;
+      const updatedUser = await db.update(users)
+        .set(updateData)
+        .where(eq(users.id, id))
+        .returning();
+      
+      res.json(updatedUser[0]);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
   // Seed data if empty
   const existingClasses = await storage.getClasses();
   if (existingClasses.length === 0) {
