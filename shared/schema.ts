@@ -24,7 +24,8 @@ export const classes = pgTable("classes", {
   description: text("description").notNull(),
   startTime: timestamp("start_time").notNull(),
   durationMinutes: integer("duration_minutes").notNull(),
-  meetingLink: text("meeting_link").notNull(),
+  meetingLink: text("meeting_link"),
+  livekitRoomName: text("livekit_room_name"),
   teacherId: integer("teacher_id").notNull(),
   reminderSent: boolean("reminder_sent").notNull().default(false),
 });

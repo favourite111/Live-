@@ -8,6 +8,7 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { sendStatusUpdateEmail, sendResetOTPEmail, sendClassConfirmationEmail, sendNewClassNotificationEmail } from "./mailer";
+import { AccessToken } from "livekit-server-sdk";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -15,6 +16,44 @@ export async function registerRoutes(
 ): Promise<Server> {
   // Setup auth first
   setupAuth(app);
+
+  // LiveKit token generation
+  app.get("/api/livekit/token", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    const { roomName } = req.query;
+    if (!roomName) return res.status(400).send("Room name is required");
+
+    const user = req.user as any;
+    const apiKey = process.env.LIVEKIT_API_KEY;
+    const apiSecret = process.env.LIVEKIT_API_SECRET;
+
+    if (!apiKey || !apiSecret) {
+      return res.status(500).send("LiveKit credentials not configured");
+    }
+
+    const at = new AccessToken(apiKey, apiSecret, {
+      identity: user.username,
+      name: user.fullName || user.username,
+    });
+
+    at.addGrant({
+      roomJoin: true,
+      room: roomName as string,
+      canPublish: user.role === "teacher",
+      canSubscribe: true,
+    });
+
+    res.json({ token: await at.toJwt() });
+  });
+
+  app.get("/api/classes/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const id = Number(req.params.id);
+    const cls = await storage.getClass(id);
+    if (!cls) return res.status(404).send("Class not found");
+    res.json(cls);
+  });
 
   // OTP Verification (Real)
   app.post(api.auth.verifyOtp.path, async (req, res) => {
@@ -102,7 +141,8 @@ export async function registerRoutes(
       // Ensure date is parsed correctly
       const classData = {
         ...input,
-        teacherId: user.id
+        teacherId: user.id,
+        livekitRoomName: `room-${Math.random().toString(36).substring(7)}`
       };
       
       const cls = await storage.createClass(classData);

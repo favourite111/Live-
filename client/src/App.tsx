@@ -15,6 +15,7 @@ import NursingResources from "@/pages/nursing-resources";
 import BrowseCourses from "@/pages/browse-courses";
 import MeetTeachers from "@/pages/meet-teachers";
 import ProfileSettings from "@/pages/profile-settings";
+import LiveClassRoom from "@/pages/live-class-room";
 
 function Router() {
   return (
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/nursing-resources" component={NursingResources} />
       <Route path="/browse-courses" component={BrowseCourses} />
       <Route path="/meet-teachers" component={MeetTeachers} />
+      <Route path="/live/:id" component={LiveClassRoom} />
       <Route component={NotFound} />
     </Switch>
   );

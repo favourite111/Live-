@@ -234,18 +234,13 @@ export default function Dashboard() {
 
                         if (isVisible || isTeacher) {
                           return (
-                            <a 
-                              href={cls.meetingLink} 
-                              target="_blank" 
-                              rel="noreferrer"
-                              className="w-full block"
+                            <Button 
+                              className="w-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-none hover:shadow-md font-medium border border-primary/20 hover:border-transparent"
+                              onClick={() => setLocation(`/live/${cls.id}`)}
                             >
-                              <Button className="w-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-none hover:shadow-md font-medium border border-primary/20 hover:border-transparent">
-                                <Video className="w-4 h-4 mr-2" />
-                                {isVisible ? "Join Class" : "View Link"}
-                                <ExternalLink className="w-3 h-3 ml-2 opacity-50" />
-                              </Button>
-                            </a>
+                              <Video className="w-4 h-4 mr-2" />
+                              {isVisible ? "Join Class" : "Start Streaming"}
+                            </Button>
                           );
                         }
 
