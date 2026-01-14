@@ -25,6 +25,12 @@ export default function Dashboard() {
     return null;
   }
 
+  // Redirect admin to admin console as default
+  if (!userLoading && user?.role === "admin" && window.location.pathname === "/dashboard") {
+    setLocation("/admin");
+    return null;
+  }
+
   if (userLoading || classesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
@@ -48,28 +54,30 @@ export default function Dashboard() {
       <header className="bg-background border-b border-border/50 sticky top-0 z-20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:flex hover:bg-primary/5">
-                  <Menu className="w-6 h-6 text-primary" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 mt-2">
-                <DropdownMenuLabel>Navigation</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {navigationItems.map((item) => (
-                  <DropdownMenuItem key={item.label} onClick={item.onClick} className="gap-3 py-3 cursor-pointer">
-                    <item.icon className={`w-5 h-5 ${item.color}`} />
-                    <span className="font-medium">{item.label}</span>
+            {!isTeacher && user?.role !== "admin" ? null : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:flex hover:bg-primary/5">
+                    <Menu className="w-6 h-6 text-primary" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56 mt-2">
+                  <DropdownMenuLabel>Navigation</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {navigationItems.map((item) => (
+                    <DropdownMenuItem key={item.label} onClick={item.onClick} className="gap-3 py-3 cursor-pointer">
+                      <item.icon className={`w-5 h-5 ${item.color}`} />
+                      <span className="font-medium">{item.label}</span>
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setLocation("/dashboard")} className="gap-3 py-3 cursor-pointer">
+                    <LayoutDashboard className="w-5 h-5 text-muted-foreground" />
+                    <span className="font-medium">Dashboard</span>
                   </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setLocation("/dashboard")} className="gap-3 py-3 cursor-pointer">
-                  <LayoutDashboard className="w-5 h-5 text-muted-foreground" />
-                  <span className="font-medium">Dashboard</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
 
             <div className="flex items-center gap-2">
                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold font-display">

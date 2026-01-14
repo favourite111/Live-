@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ShieldCheck, UserCheck, UserX, Trash2, ArrowLeft, GraduationCap, Users, Video, Clock, BarChart3, Calendar } from "lucide-react";
+import { Loader2, ShieldCheck, UserCheck, UserX, Trash2, GraduationCap, Users, Video, Clock, BarChart3, Calendar, Menu, PlayCircle, BookOpen, MessageSquare, LayoutDashboard } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { format } from "date-fns";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 
 export default function AdminDashboard() {
   const { data: user, isLoading: userLoading } = useUser();
@@ -74,6 +75,14 @@ export default function AdminDashboard() {
     return null;
   }
 
+  const navigationItems = [
+    { label: "Upcoming Classes", icon: Video, color: "text-blue-500", onClick: () => setLocation("/dashboard") },
+    { label: "Browse Courses", icon: PlayCircle, color: "text-blue-500", onClick: () => setLocation("/browse-courses") },
+    { label: "Nursing Resources", icon: BookOpen, color: "text-emerald-500", onClick: () => setLocation("/nursing-resources") },
+    { label: "Meet Teachers", icon: Users, color: "text-orange-500", onClick: () => setLocation("/meet-teachers") },
+    { label: "Community", icon: MessageSquare, color: "text-pink-500", onClick: () => window.open("https://chat.whatsapp.com/your-group-id", "_blank") },
+  ];
+
   const studentsCount = users?.filter((u) => u.role === "student").length || 0;
   const teachersCount = users?.filter((u) => u.role === "teacher").length || 0;
   const pendingUsersCount = users?.filter((u) => u.status === "pending").length || 0;
@@ -83,9 +92,28 @@ export default function AdminDashboard() {
       <header className="bg-background border-b h-16 flex items-center px-4 sm:px-6 lg:px-8 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => setLocation("/dashboard")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="hover:bg-primary/5">
+                  <Menu className="w-6 h-6 text-primary" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 mt-2">
+                <DropdownMenuLabel>Admin Navigation</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {navigationItems.map((item) => (
+                  <DropdownMenuItem key={item.label} onClick={item.onClick} className="gap-3 py-3 cursor-pointer">
+                    <item.icon className={`w-5 h-5 ${item.color}`} />
+                    <span className="font-medium">{item.label}</span>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setLocation("/admin")} className="gap-3 py-3 cursor-pointer">
+                  <LayoutDashboard className="w-5 h-5 text-muted-foreground" />
+                  <span className="font-medium">Admin Console</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <h1 className="text-xl font-bold font-display flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-primary" />
               Admin Console
@@ -95,10 +123,10 @@ export default function AdminDashboard() {
             variant="outline" 
             size="sm" 
             className="bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 transition-colors gap-2"
-            onClick={() => toast({ title: "Coming Soon", description: "Detailed platform reports will be available here soon." })}
+            onClick={() => setLocation("/dashboard")}
           >
-            <BarChart3 className="w-4 h-4" />
-            Platform Overview
+            <Video className="w-4 h-4" />
+            Upcoming Classes
           </Button>
         </div>
       </header>
