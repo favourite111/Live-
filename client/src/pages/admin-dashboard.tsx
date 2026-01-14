@@ -160,7 +160,10 @@ export default function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-border/60 hover:shadow-md transition-all">
+          <Card 
+            className="border-border/60 hover:shadow-md transition-all cursor-pointer hover:bg-primary/5 active:scale-[0.98]"
+            onClick={() => setLocation("/dashboard")}
+          >
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
