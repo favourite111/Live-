@@ -91,9 +91,15 @@ export default function AdminDashboard() {
               Admin Console
             </h1>
           </div>
-          <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 transition-colors gap-2"
+            onClick={() => toast({ title: "Coming Soon", description: "Detailed platform reports will be available here soon." })}
+          >
+            <BarChart3 className="w-4 h-4" />
             Platform Overview
-          </Badge>
+          </Button>
         </div>
       </header>
 
