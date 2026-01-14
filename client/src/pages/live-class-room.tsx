@@ -5,12 +5,6 @@ import {
   LiveKitRoom, 
   VideoConference, 
   RoomAudioRenderer,
-  ControlBar,
-  useTokenCustomization,
-  useLocalParticipant,
-  ParticipantTile,
-  LayoutLoop,
-  TrackLoop,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { Loader2, ArrowLeft, Users, Video } from "lucide-react";

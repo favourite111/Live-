@@ -142,7 +142,8 @@ export async function registerRoutes(
       const classData = {
         ...input,
         teacherId: user.id,
-        livekitRoomName: `room-${Math.random().toString(36).substring(7)}`
+        livekitRoomName: `room-${Math.random().toString(36).substring(7)}`,
+        meetingLink: input.meetingLink || ""
       };
       
       const cls = await storage.createClass(classData);
