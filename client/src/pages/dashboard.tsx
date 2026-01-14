@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { User as UserIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const { data: user, isLoading: userLoading } = useUser();
@@ -19,19 +20,18 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
   const deleteClass = useDeleteClass();
 
-  // Route protection
-  if (!userLoading && !user) {
-    setLocation("/auth");
-    return null;
-  }
+  // Route protection & Admin redirect
+  useEffect(() => {
+    if (!userLoading) {
+      if (!user) {
+        setLocation("/auth");
+      } else if (user.role === "admin" && window.location.pathname === "/dashboard") {
+        setLocation("/admin");
+      }
+    }
+  }, [user, userLoading, setLocation]);
 
-  // Redirect admin to admin console as default
-  if (!userLoading && user?.role === "admin" && window.location.pathname === "/dashboard") {
-    setLocation("/admin");
-    return null;
-  }
-
-  if (userLoading || classesLoading) {
+  if (userLoading || classesLoading || (user?.role === "admin" && window.location.pathname === "/dashboard")) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
