@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 import { useLocation } from "wouter";
-import { Loader2, LogOut, Video, Calendar, Clock, Trash2, ExternalLink, ShieldCheck, GraduationCap, BookOpen, Users, MessageSquare, PlayCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { Loader2, LogOut, Video, Calendar, Clock, Trash2, ExternalLink, ShieldCheck, GraduationCap, BookOpen, Users, MessageSquare, PlayCircle, Menu, X, LayoutDashboard } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { User as UserIcon } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 
 export default function Dashboard() {
   const { data: user, isLoading: userLoading } = useUser();
@@ -34,16 +35,48 @@ export default function Dashboard() {
 
   const isTeacher = user?.role === "teacher";
 
+  const navigationItems = [
+    { label: "Browse Courses", icon: PlayCircle, color: "text-blue-500", onClick: () => setLocation("/browse-courses") },
+    { label: "Nursing Resources", icon: BookOpen, color: "text-emerald-500", onClick: () => setLocation("/nursing-resources") },
+    { label: "Meet Teachers", icon: Users, color: "text-orange-500", onClick: () => setLocation("/meet-teachers") },
+    { label: "Community", icon: MessageSquare, color: "text-pink-500", onClick: () => window.open("https://chat.whatsapp.com/your-group-id", "_blank") },
+  ];
+
   return (
     <div className="min-h-screen bg-muted/10">
       {/* Header */}
       <header className="bg-background border-b border-border/50 sticky top-0 z-20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold font-display">
-              L
+          <div className="flex items-center gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:flex hover:bg-primary/5">
+                  <Menu className="w-6 h-6 text-primary" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 mt-2">
+                <DropdownMenuLabel>Navigation</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {navigationItems.map((item) => (
+                  <DropdownMenuItem key={item.label} onClick={item.onClick} className="gap-3 py-3 cursor-pointer">
+                    <item.icon className={`w-5 h-5 ${item.color}`} />
+                    <span className="font-medium">{item.label}</span>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setLocation("/dashboard")} className="gap-3 py-3 cursor-pointer">
+                  <LayoutDashboard className="w-5 h-5 text-muted-foreground" />
+                  <span className="font-medium">Dashboard</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <div className="flex items-center gap-2">
+               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold font-display">
+                L
+              </div>
+              <span className="font-display font-bold text-xl text-foreground hidden sm:inline-block">LiveClass</span>
             </div>
-            <span className="font-display font-bold text-xl text-foreground">LiveClass</span>
           </div>
           
           <div className="flex items-center gap-4">
