@@ -230,16 +230,21 @@ export default function Dashboard() {
                         const startTime = new Date(cls.startTime).getTime();
                         const now = new Date().getTime();
                         const diffMinutes = (startTime - now) / (1000 * 60);
-                        const isVisible = diffMinutes <= 30 && diffMinutes >= -cls.durationMinutes;
+                        
+                        // Show join button if:
+                        // 1. It's a teacher (they can always join)
+                        // 2. It's within 30 minutes of starting
+                        // 3. The class has already started but hasn't finished yet
+                        const isVisible = isTeacher || (diffMinutes <= 30 && diffMinutes >= -cls.durationMinutes);
 
-                        if (isVisible || isTeacher) {
+                        if (isVisible) {
                           return (
                             <Button 
                               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md font-medium"
                               onClick={() => setLocation(`/live/${cls.id}`)}
                             >
                               <Video className="w-4 h-4 mr-2" />
-                              {isVisible ? "Join Class" : "Start Streaming"}
+                              {diffMinutes <= 0 ? "Join Now" : (isTeacher ? "Start Streaming" : "Join Class")}
                             </Button>
                           );
                         }

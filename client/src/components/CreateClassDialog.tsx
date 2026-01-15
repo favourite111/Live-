@@ -31,6 +31,8 @@ import { cn } from "@/lib/utils";
 
 // Extend the schema for the form to handle date and time separately before combining
 const formSchema = insertClassSchema.omit({ teacherId: true }).extend({
+  title: z.string().min(1, "Class title is required"),
+  description: z.string().min(1, "Description is required"),
   startTime: z.date(), // Date object from calendar
   time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format"), // HH:MM string
 });
