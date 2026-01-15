@@ -74,7 +74,7 @@ export default function LiveClassRoom() {
             rtcConfig: {
               iceTransportPolicy: 'relay',
             }
-          }}
+          } as any}
           data-lk-theme="default"
           className="h-full"
           onDisconnected={() => setLocation("/dashboard")}
