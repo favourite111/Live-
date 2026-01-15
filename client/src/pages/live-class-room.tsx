@@ -68,10 +68,19 @@ export default function LiveClassRoom() {
           video={user?.role === "teacher"}
           audio={user?.role === "teacher"}
           token={token}
-          serverUrl={import.meta.env.VITE_LIVEKIT_URL || "wss://livekit.io"} // Fallback or env
+          serverUrl={import.meta.env.VITE_LIVEKIT_URL || `wss://${window.location.host}`}
+          options={{
+            expConnect: true,
+            rtcConfig: {
+              iceTransportPolicy: 'relay',
+            }
+          }}
           data-lk-theme="default"
           className="h-full"
           onDisconnected={() => setLocation("/dashboard")}
+          onError={(err) => {
+            console.error("LiveKit Room Error:", err);
+          }}
         >
           <VideoConference />
           <RoomAudioRenderer />
