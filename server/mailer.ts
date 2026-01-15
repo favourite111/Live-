@@ -96,7 +96,6 @@ export async function sendClassConfirmationEmail(to: string, fullName: string, c
   description: string;
   startTime: string;
   durationMinutes: number;
-  meetingLink: string;
 }) {
   try {
     await mailer.sendMail({
@@ -112,8 +111,7 @@ export async function sendClassConfirmationEmail(to: string, fullName: string, c
           <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 0 0 10px 0;"><strong>Title:</strong> ${classDetails.title}</p>
             <p style="margin: 0 0 10px 0;"><strong>Time:</strong> ${classDetails.startTime}</p>
-            <p style="margin: 0 0 10px 0;"><strong>Duration:</strong> ${classDetails.durationMinutes} minutes</p>
-            <p style="margin: 0;"><strong>Meeting Link:</strong> <a href="${classDetails.meetingLink}">${classDetails.meetingLink}</a></p>
+            <p style="margin: 0;"><strong>Duration:</strong> ${classDetails.durationMinutes} minutes</p>
           </div>
 
           <div style="text-align: center; margin: 30px 0;">
@@ -134,7 +132,6 @@ export async function sendClassConfirmationEmail(to: string, fullName: string, c
 export async function sendClassReminderEmail(to: string, fullName: string, classDetails: {
   title: string;
   startTime: string;
-  meetingLink: string;
 }) {
   try {
     await mailer.sendMail({
@@ -148,7 +145,7 @@ export async function sendClassReminderEmail(to: string, fullName: string, class
           <p style="font-size: 16px; line-height: 1.5; color: #475569;">Your class "<strong>${classDetails.title}</strong>" starts in about 30 minutes at ${classDetails.startTime}.</p>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${classDetails.meetingLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Join Class Now</a>
+            <a href="https://${process.env.REPLIT_DEV_DOMAIN}/dashboard" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Join Class Now</a>
           </div>
           
           <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />

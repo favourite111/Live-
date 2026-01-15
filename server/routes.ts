@@ -143,7 +143,6 @@ export async function registerRoutes(
         ...input,
         teacherId: user.id,
         livekitRoomName: `room-${Math.random().toString(36).substring(7)}`,
-        meetingLink: input.meetingLink || ""
       };
       
       const cls = await storage.createClass(classData);
@@ -163,7 +162,6 @@ export async function registerRoutes(
         description: cls.description,
         startTime: cls.startTime.toLocaleString(),
         durationMinutes: cls.durationMinutes,
-        meetingLink: cls.meetingLink
       });
 
       // Send notifications to all students

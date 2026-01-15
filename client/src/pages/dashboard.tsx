@@ -235,7 +235,7 @@ export default function Dashboard() {
                         if (isVisible || isTeacher) {
                           return (
                             <Button 
-                              className="w-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-none hover:shadow-md font-medium border border-primary/20 hover:border-transparent"
+                              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md font-medium"
                               onClick={() => setLocation(`/live/${cls.id}`)}
                             >
                               <Video className="w-4 h-4 mr-2" />
@@ -246,7 +246,7 @@ export default function Dashboard() {
 
                         return (
                           <div className="bg-muted/50 rounded-md p-3 text-center text-sm text-muted-foreground border border-border/40">
-                            Meeting link visible 30m before start
+                            Join button visible 30m before start
                           </div>
                         );
                       })()}

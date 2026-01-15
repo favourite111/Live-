@@ -47,7 +47,6 @@ export function CreateClassDialog() {
     defaultValues: {
       title: "",
       description: "",
-      meetingLink: "",
       durationMinutes: 60,
       time: "19:59", // Default matching the screenshot or a reasonable default
       startTime: new Date(), 
@@ -65,7 +64,6 @@ export function CreateClassDialog() {
     const payload: InsertClass = {
       title: data.title,
       description: data.description,
-      meetingLink: data.meetingLink,
       durationMinutes: data.durationMinutes,
       startTime: combinedDate.toISOString() as any, // Cast to any because the schema expects a Date object but the API might handle strings
       teacherId: 0, // Backend handles this from session, but we provide it to satisfy the type
@@ -190,7 +188,7 @@ export function CreateClassDialog() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <FormField
                 control={form.control}
                 name="durationMinutes"
@@ -208,23 +206,7 @@ export function CreateClassDialog() {
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="meetingLink"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Meeting Link</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://zoom.us/j/..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
-
-            <div className="flex justify-end space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
