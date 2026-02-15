@@ -26,7 +26,7 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-// Register Schema
+// Register Schema - reusing insertUserSchema but refining it
 const registerSchema = insertUserSchema.extend({
   fullName: z.string().trim().refine((v) => v.split(" ").length >= 2, {
     message: "Full name must contain at least first and last name",
@@ -45,6 +45,9 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (user) {
+      // If user is already logged in, redirect based on their status/role if needed,
+      // or just go to dashboard.
+      // For now, simple redirect to dashboard.
       setLocation("/dashboard");
     }
   }, [user, setLocation]);
@@ -56,6 +59,7 @@ export default function AuthPage() {
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      role: "student",
       gender: "male",
     },
   });
@@ -81,26 +85,19 @@ export default function AuthPage() {
             <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-primary-foreground font-bold font-display text-xl mx-auto mb-2 shadow-lg shadow-primary/20">
               L
             </div>
-            <CardTitle className="text-2xl font-display">
-              Welcome to LiveClass
-            </CardTitle>
+            <CardTitle className="text-2xl font-display">Welcome to LiveClass</CardTitle>
             <CardDescription>
               Login to access your account or create a new one.
             </CardDescription>
           </CardHeader>
 
           <CardContent>
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="register">Register</TabsTrigger>
               </TabsList>
 
-              {/* LOGIN */}
               <TabsContent value="login">
                 <form
                   onSubmit={loginForm.handleSubmit((data) =>
@@ -116,12 +113,9 @@ export default function AuthPage() {
                       {...loginForm.register("username")}
                     />
                     {loginForm.formState.errors.username && (
-                      <p className="text-sm text-destructive">
-                        {loginForm.formState.errors.username.message}
-                      </p>
+                      <p className="text-sm text-destructive">{loginForm.formState.errors.username.message}</p>
                     )}
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="login-password">Password</Label>
                     <Input
@@ -131,22 +125,16 @@ export default function AuthPage() {
                       {...loginForm.register("password")}
                     />
                     {loginForm.formState.errors.password && (
-                      <p className="text-sm text-destructive">
-                        {loginForm.formState.errors.password.message}
-                      </p>
+                      <p className="text-sm text-destructive">{loginForm.formState.errors.password.message}</p>
                     )}
                   </div>
 
-                  <Button
-                    className="w-full mt-2"
-                    disabled={loginMutation.isPending}
-                  >
+                  <Button className="w-full mt-2" disabled={loginMutation.isPending}>
                     {loginMutation.isPending && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
                     Sign In
                   </Button>
-
                   <div className="text-center mt-2">
                     <Button
                       variant="link"
@@ -160,7 +148,6 @@ export default function AuthPage() {
                 </form>
               </TabsContent>
 
-              {/* REGISTER */}
               <TabsContent value="register">
                 <form
                   onSubmit={registerForm.handleSubmit((data) =>
@@ -178,9 +165,7 @@ export default function AuthPage() {
                       {...registerForm.register("fullName")}
                     />
                     {registerForm.formState.errors.fullName && (
-                      <p className="text-sm text-destructive">
-                        {registerForm.formState.errors.fullName.message}
-                      </p>
+                      <p className="text-sm text-destructive">{registerForm.formState.errors.fullName.message}</p>
                     )}
                   </div>
 
@@ -193,9 +178,7 @@ export default function AuthPage() {
                       {...registerForm.register("email")}
                     />
                     {registerForm.formState.errors.email && (
-                      <p className="text-sm text-destructive">
-                        {registerForm.formState.errors.email.message}
-                      </p>
+                      <p className="text-sm text-destructive">{registerForm.formState.errors.email.message}</p>
                     )}
                   </div>
 
@@ -208,12 +191,9 @@ export default function AuthPage() {
                         {...registerForm.register("username")}
                       />
                       {registerForm.formState.errors.username && (
-                        <p className="text-sm text-destructive">
-                          {registerForm.formState.errors.username.message}
-                        </p>
+                        <p className="text-sm text-destructive">{registerForm.formState.errors.username.message}</p>
                       )}
                     </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="reg-password">Password</Label>
                       <Input
@@ -223,24 +203,34 @@ export default function AuthPage() {
                         {...registerForm.register("password")}
                       />
                       {registerForm.formState.errors.password && (
-                        <p className="text-sm text-destructive">
-                          {registerForm.formState.errors.password.message}
-                        </p>
+                        <p className="text-sm text-destructive">{registerForm.formState.errors.password.message}</p>
                       )}
                     </div>
                   </div>
 
-                  {/* GENDER ONLY */}
+                  <div className="space-y-2">
+                    <Label>I am a...</Label>
+                    <RadioGroup
+                      defaultValue="student"
+                      onValueChange={(v) => registerForm.setValue("role", v as "student" | "teacher")}
+                      className="grid grid-cols-2 gap-4"
+                    >
+                      <Label className="flex items-center justify-between px-4 py-3 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors [&:has(:checked)]:border-primary [&:has(:checked)]:bg-primary/5">
+                        <span>Student</span>
+                        <RadioGroupItem value="student" />
+                      </Label>
+                      <Label className="flex items-center justify-between px-4 py-3 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors [&:has(:checked)]:border-primary [&:has(:checked)]:bg-primary/5">
+                        <span>Teacher</span>
+                        <RadioGroupItem value="teacher" />
+                      </Label>
+                    </RadioGroup>
+                  </div>
+
                   <div className="space-y-2">
                     <Label>Gender</Label>
                     <RadioGroup
                       defaultValue="male"
-                      onValueChange={(v) =>
-                        registerForm.setValue(
-                          "gender",
-                          v as "male" | "female"
-                        )
-                      }
+                      onValueChange={(v) => registerForm.setValue("gender", v as "male" | "female")}
                       className="flex gap-4"
                     >
                       <Label className="flex items-center gap-2 cursor-pointer">
@@ -252,10 +242,7 @@ export default function AuthPage() {
                     </RadioGroup>
                   </div>
 
-                  <Button
-                    className="w-full mt-4"
-                    disabled={registerMutation.isPending}
-                  >
+                  <Button className="w-full mt-4" disabled={registerMutation.isPending}>
                     {registerMutation.isPending && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
