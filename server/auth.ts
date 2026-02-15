@@ -72,42 +72,39 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/auth/register", async (req, res, next) => {
-    try {
-      const existingUser = await storage.getUserByUsername(req.body.username);
-      if (existingUser) {
-        return res.status(400).send("Username already exists");
-      }
-
-      const hashedPassword = await hashPasswordInternal(req.body.password);
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      
-      const user = await storage.createUser({
-        ...req.body,
-        password: hashedPassword,
-        status: req.body.role === 'teacher' ? 'pending' : 'active',
-        otp: otp
-      });
-
-      // Send the real OTP email
-      await sendOTPEmail(user.email, otp);
-
-      // Auto-enroll student in all existing classes
-      if (user.role === 'student') {
-        const allOpenClasses = await db.select().from(classes);
-        for (const cls of allOpenClasses) {
-          await db.insert(enrollments).values({
-            userId: user.id,
-            classId: cls.id
-          });
-        }
-      }
-
-      // Don't auto-login here because we want them to go through OTP
-      res.status(201).json(user);
-    } catch (err: any) {
-      res.status(400).json({ message: err.message || "Registration failed" });
+  try {
+    const existingUser = await storage.getUserByUsername(req.body.username);
+    if (existingUser) {
+      return res.status(400).send("Username already exists");
     }
-  });
+
+    const hashedPassword = await hashPasswordInternal(req.body.password);
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const user = await storage.createUser({
+      ...req.body,
+      password: hashedPassword,
+      status: "active", // ✅ everyone active now
+      otp: otp,
+    });
+
+    // Send OTP email
+    await sendOTPEmail(user.email, otp);
+
+    // Auto-enroll ALL users in all classes
+    const allOpenClasses = await db.select().from(classes);
+    for (const cls of allOpenClasses) {
+      await db.insert(enrollments).values({
+        userId: user.id,
+        classId: cls.id,
+      });
+    }
+
+    res.status(201).json(user);
+  } catch (err: any) {
+    res.status(400).json({ message: err.message || "Registration failed" });
+  }
+});
 
   app.post("/api/auth/login", passport.authenticate("local"), (req, res) => {
     res.status(200).json(req.user);
